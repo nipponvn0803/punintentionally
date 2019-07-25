@@ -10,6 +10,9 @@ const app = express();
 app.use(cors());
 const router = express.Router();
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'client/build')));
+
 // this is our MongoDB database
 const dbRoute =
   'mongodb+srv://caoson:hikzDFBB@text-query-mmjwm.mongodb.net/test?retryWrites=true&w=majority';
