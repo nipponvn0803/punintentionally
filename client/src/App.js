@@ -4,6 +4,7 @@ import axios from "axios";
 class App extends Component {
   // initialize our state
   state = {
+    randomQuote: "",
     data: [],
     id: 0,
     message: null,
@@ -79,6 +80,35 @@ class App extends Component {
     });
   };
 
+  getARandomEntry = () => {
+    let length = null;
+    let randomID = null;
+    fetch("/api/getData")
+      .then(data => data.json())
+      .then(function(response) {
+        length = response.data.length;
+        randomID = Math.floor(Math.random() * length);
+        console.log(randomID);
+      })
+      // .then(res => (length = res.data.data.length))
+      // .then(randomID = Math.floor(Math.random() * (length + 1)));
+      .then(
+        axios
+          .get("/api/getData", {
+            params: {
+              randomID: randomID
+            }
+          })
+          .then(response =>
+            this.setState({ randomQuote: response.data.data[randomID].message })
+          )
+        // .then(function(response) {
+        //   this.setState({randomQuote: response.data.data[randomID] })
+        //   console.log(response.data.data[randomID]);
+        // })
+      );
+  };
+
   // our update method that uses our backend api
   // to overwrite existing data base information
   updateDB = (idToUpdate, updateToApply) => {
@@ -100,7 +130,7 @@ class App extends Component {
   // it is easy to understand their functions when you
   // see them render into our screen
   render() {
-    const { data } = this.state;
+    const { data, randomQuote } = this.state;
     return (
       <div>
         <ul>
@@ -156,6 +186,10 @@ class App extends Component {
           >
             UPDATE
           </button>
+        </div>
+        <div style={{ padding: "10px" }}>
+          {randomQuote}
+          <button onClick={() => this.getARandomEntry()}>Random</button>
         </div>
       </div>
     );
