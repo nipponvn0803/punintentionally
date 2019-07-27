@@ -1,10 +1,16 @@
 import React, { Component } from "react";
 import axios from "axios";
+import MaterialTable from "material-table";
 
 class App extends Component {
   // initialize our state
   state = {
     randomQuote: "",
+    columns: [
+      { title: "ID", field: "id", editable: "never" },
+      { title: "Created at", field: "createdAt", editable: "never" },
+      { title: "Message", field: "message" }
+    ],
     data: [],
     id: 0,
     message: null,
@@ -133,62 +139,51 @@ class App extends Component {
     const { data, randomQuote } = this.state;
     return (
       <div>
-        <ul>
-          {data.length <= 0
-            ? "NO DB ENTRIES YET"
-            : data.map(dat => (
-                <li style={{ padding: "10px" }} key={data.message}>
-                  <span style={{ color: "gray" }}> id: </span> {dat.id} <br />
-                  <span style={{ color: "gray" }}> data: </span>
-                  {dat.message}
-                </li>
-              ))}
-        </ul>
-        <div style={{ padding: "10px" }}>
-          <input
-            type="text"
-            onChange={e => this.setState({ message: e.target.value })}
-            placeholder="add something in the database"
-            style={{ width: "200px" }}
-          />
-          <button onClick={() => this.putDataToDB(this.state.message)}>
-            ADD
-          </button>
-        </div>
-        <div style={{ padding: "10px" }}>
-          <input
-            type="text"
-            style={{ width: "200px" }}
-            onChange={e => this.setState({ idToDelete: e.target.value })}
-            placeholder="put id of item to delete here"
-          />
-          <button onClick={() => this.deleteFromDB(this.state.idToDelete)}>
-            DELETE
-          </button>
-        </div>
-        <div style={{ padding: "10px" }}>
-          <input
-            type="text"
-            style={{ width: "200px" }}
-            onChange={e => this.setState({ idToUpdate: e.target.value })}
-            placeholder="id of item to update here"
-          />
-          <input
-            type="text"
-            style={{ width: "200px" }}
-            onChange={e => this.setState({ updateToApply: e.target.value })}
-            placeholder="put new value of the item here"
-          />
-          <button
-            onClick={() =>
-              this.updateDB(this.state.idToUpdate, this.state.updateToApply)
-            }
-          >
-            UPDATE
-          </button>
-        </div>
+        <MaterialTable
+          title="123"
+          columns={this.state.columns}
+          data={data}
+          editable={{
+            onRowAdd: newData =>
+              new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  this.setState({ message: newData.message }, function() {
+                    this.putDataToDB(this.state.message);
+                  });
+                  resolve();
+                }, 1000);
+              }),
+            onRowUpdate: (newData, oldData) =>
+              new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  this.setState(
+                    { idToUpdate: oldData.id, updateToApply: newData.message },
+                    function() {
+                      this.updateDB(
+                        this.state.idToUpdate,
+                        this.state.updateToApply
+                      );
+                    }
+                  );
+                  resolve();
+                }, 1000);
+              }),
+            onRowDelete: oldData =>
+              new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  this.setState({ idToDelete: oldData.id }, function() {
+                    this.deleteFromDB(this.state.idToDelete);
+                  });
+
+                  resolve();
+                }, 1000);
+              })
+          }}
+        />
+
         <div style={{ padding: "10px" }}>
           {randomQuote}
+          <br />
           <button onClick={() => this.getARandomEntry()}>Random</button>
         </div>
       </div>
