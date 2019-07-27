@@ -25,20 +25,20 @@ class App extends Component {
   // changed and implement those changes into our UI
   componentDidMount() {
     this.getDataFromDb();
-    if (!this.state.intervalIsSet) {
-      let interval = setInterval(this.getDataFromDb, 1000);
-      this.setState({ intervalIsSet: interval });
-    }
+    // if (!this.state.intervalIsSet) {
+    //   let interval = setInterval(this.getDataFromDb, 1000);
+    //   this.setState({ intervalIsSet: interval });
+    // }
   }
 
   // never let a process live forever
   // always kill a process everytime we are done using it
-  componentWillUnmount() {
-    if (this.state.intervalIsSet) {
-      clearInterval(this.state.intervalIsSet);
-      this.setState({ intervalIsSet: null });
-    }
-  }
+  // componentWillUnmount() {
+  //   if (this.state.intervalIsSet) {
+  //     clearInterval(this.state.intervalIsSet);
+  //     this.setState({ intervalIsSet: null });
+  //   }
+  // }
 
   // just a note, here, in the front end, we use the id key of our data object
   // in order to identify which we want to Update or delete.
@@ -62,10 +62,12 @@ class App extends Component {
       ++idToBeAdded;
     }
 
-    axios.post("/api/putData", {
-      id: idToBeAdded,
-      message: message
-    });
+    axios
+      .post("/api/putData", {
+        id: idToBeAdded,
+        message: message
+      })
+      .then(this.getDataFromDb);
   };
 
   // our delete method that uses our backend api
@@ -79,11 +81,13 @@ class App extends Component {
       }
     });
 
-    axios.delete("/api/deleteData", {
-      data: {
-        id: objIdToDelete
-      }
-    });
+    axios
+      .delete("/api/deleteData", {
+        data: {
+          id: objIdToDelete
+        }
+      })
+      .then(this.getDataFromDb);
   };
 
   getARandomEntry = () => {
@@ -94,24 +98,16 @@ class App extends Component {
       .then(function(response) {
         length = response.data.length;
         randomID = Math.floor(Math.random() * length);
-        console.log(randomID);
+      });
+    
+    axios
+      .get("/api/getData", {
+        params: {
+          randomID: randomID
+        }
       })
-      // .then(res => (length = res.data.data.length))
-      // .then(randomID = Math.floor(Math.random() * (length + 1)));
-      .then(
-        axios
-          .get("/api/getData", {
-            params: {
-              randomID: randomID
-            }
-          })
-          .then(response =>
-            this.setState({ randomQuote: response.data.data[randomID].message })
-          )
-        // .then(function(response) {
-        //   this.setState({randomQuote: response.data.data[randomID] })
-        //   console.log(response.data.data[randomID]);
-        // })
+      .then(response =>
+        this.setState({ randomQuote: response.data.data[randomID].message })
       );
   };
 
@@ -126,10 +122,12 @@ class App extends Component {
       }
     });
 
-    axios.post("/api/updateData", {
-      id: objIdToUpdate,
-      update: { message: updateToApply }
-    });
+    axios
+      .post("/api/updateData", {
+        id: objIdToUpdate,
+        update: { message: updateToApply }
+      })
+      .then(this.getDataFromDb);
   };
 
   // here is our UI
@@ -140,7 +138,7 @@ class App extends Component {
     return (
       <div>
         <MaterialTable
-          title="123"
+          title="For My Autumn"
           columns={this.state.columns}
           data={data}
           editable={{
