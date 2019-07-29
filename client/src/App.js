@@ -90,26 +90,27 @@ class App extends Component {
       .then(this.getDataFromDb);
   };
 
-  getARandomEntry = () => {
-    let length = null;
-    let randomID = null;
-    fetch("/api/getData")
-      .then(data => data.json())
-      .then(function(response) {
-        length = response.data.length;
-        randomID = Math.floor(Math.random() * length);
-      });
-    
-    axios
-      .get("/api/getData", {
-        params: {
-          randomID: randomID
-        }
-      })
-      .then(response =>
-        this.setState({ randomQuote: response.data.data[randomID].message })
-      );
-  };
+  // Get a random entry from datatbase
+  // getARandomEntry = () => {
+  //   let length = null;
+  //   let randomID = null;
+  //   fetch("/api/getData")
+  //     .then(data => data.json())
+  //     .then(function(response) {
+  //       length = response.data.length;
+  //       randomID = Math.floor(Math.random() * length);
+  //     });
+
+  //   axios
+  //     .get("/api/getData", {
+  //       params: {
+  //         randomID: randomID
+  //       }
+  //     })
+  //     .then(response =>
+  //       this.setState({ randomQuote: response.data.data[randomID].message })
+  //     );
+  // };
 
   // our update method that uses our backend api
   // to overwrite existing data base information
@@ -179,11 +180,11 @@ class App extends Component {
           }}
         />
 
-        <div style={{ padding: "10px" }}>
+        {/* <div style={{ padding: "10px" }}>
           {randomQuote}
           <br />
           <button onClick={() => this.getARandomEntry()}>Random</button>
-        </div>
+        </div> */}
       </div>
     );
   }
